@@ -1,0 +1,38 @@
+{
+  "name": "mz-create-frontend-template",
+  "version": "0.1.0",
+  "description": "Template frontend modular e seguro com Next.js",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "keywords": [
+    "template",
+    "nextjs",
+    "feature-based",
+    "typescript"
+  ],
+  "author": "masterzdran",
+  "license": "MIT",
+  "files": [
+    "src",
+    ".env.example",
+    "Dockerfile",
+    "tsconfig.json",
+    "next.config.js"
+  ],
+  "dependencies": {
+    "next": "^15.4.6",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "@types/react": "^19.1.10",
+    "typescript": "5.9.2"
+  }
+}
