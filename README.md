@@ -30,6 +30,8 @@ A modular, secure frontend template using Next.js, Typescript, and feature-based
      - `FEATURE_FLAGS`
      - `CONFIG_ACCESS_TOKEN`
      - `NEXT_PUBLIC_CONFIG_ACCESS_TOKEN`
+     - `OTEL_EXPORTER_OTLP_ENDPOINT` (for OpenTelemetry)
+     - `AZURE_MONITOR_CONNECTION_STRING` (optional, for Azure Monitor)
 
 3. **Install dependencies:**
    ```sh
@@ -97,16 +99,19 @@ Dockerfile
 - docs/security.md — Security practices
 - docs/setup.md — Setup guide
 
-## 📈 OpenTelemetry Tracing Feature
+---
 
-This project includes a modular, self-contained OpenTelemetry feature for distributed tracing.  
-Traces can be exported to Azure Monitor (Application Insights), any OTLP-compatible backend, or disabled entirely.
+## 📈 OpenTelemetry Tracing & Logging Feature
+
+This project includes a modular, self-contained OpenTelemetry feature for distributed tracing **and semantic logging**.  
+Traces and logs can be exported to Azure Monitor (Application Insights), any OTLP-compatible backend, or disabled entirely.
 
 ### How It Works
 
 - The OpenTelemetry logic is implemented as a feature in `src/features/opentelemetry/otel.ts`.
 - A bootstrap file (`otel-bootstrap.ts`) at the project root loads this feature before the Next.js app starts.
 - The bootstrap file is preloaded automatically via the `-r ./otel-bootstrap.js` flag in the `dev` and `start` scripts in `package.json`.
+- Semantic logging is implemented as a feature in `src/features/logging/index.js` and uses OpenTelemetry's logger provider.
 
 ### Configuration
 
@@ -124,12 +129,12 @@ OTEL_SERVICE_NAME=mz-create-frontend-template
 ```
 
 - If `AZURE_MONITOR_CONNECTION_STRING` is set, traces are sent to Azure Monitor.
-- If `OTEL_EXPORTER_OTLP_ENDPOINT` is set (and Azure is not), traces are sent to the OTLP endpoint.
-- If neither is set, tracing is enabled but not exported externally.
+- If `OTEL_EXPORTER_OTLP_ENDPOINT` is set (and Azure is not), traces and logs are sent to the OTLP endpoint.
+- If neither is set, tracing and logging are enabled but not exported externally.
 
 ### Usage
 
-No manual code changes are needed to enable tracing.  
+No manual code changes are needed to enable tracing or logging.  
 Just set the environment variables and run your app as usual:
 
 ```sh
@@ -140,18 +145,36 @@ npm start
 
 The OpenTelemetry feature will initialize automatically before Next.js starts.
 
+#### Semantic Logging
+
+Use the logging feature in your application code:
+
+```javascript
+import { logInfo, logWarn, logError } from "@/features/logging";
+
+logInfo("User login", { userId: "abc123" });
+logWarn("Suspicious activity detected", { ip: "1.2.3.4" });
+logError("Unhandled exception", { error: "Stack trace..." });
+```
+
+Logs are structured and, if configured, exported via OpenTelemetry.
+
 ### File Structure
 
 ```
 src/features/opentelemetry/
-  otel.ts         # OpenTelemetry setup logic
+  otel.ts         # OpenTelemetry setup logic (tracing & logging)
   index.ts        # Feature entry point
+
+src/features/logging/
+  index.js        # Semantic logging feature
+
 otel-bootstrap.ts # Bootstrap file at project root (preloaded by Node.js)
 ```
 
 ---
 
-For more details, see the comments in `src/features/opentelemetry/otel.ts`.
+For more details, see the comments in `src/features/opentelemetry/otel.ts` and `src/features/logging/index.js`.
 
 ---
 
