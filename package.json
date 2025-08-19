@@ -1,13 +1,13 @@
 {
   "name": "mz-create-frontend-template",
   "version": "0.1.0",
-  "description": "Template frontend modular e seguro com Next.js",
+  "description": "Template for modular and secured frontend with Next.js",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "next dev",
+    "dev": "node -r ./otel-bootstrap.js node_modules/.bin/next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint .",
+    "start": "node -r ./otel-bootstrap.js node_modules/.bin/next start",
+    "lint": "next lint",
     "test": "jest"
   },
   "keywords": [
@@ -16,19 +16,41 @@
     "feature-based",
     "typescript"
   ],
-  "author": "masterzdran",
+  "author": "Nuno Cancelo",
   "license": "MIT",
   "files": [
+    ".devcontainer",
+    ".vscode",
+    "docs",
     "src",
     ".env.example",
+    ".gitignore",
     "Dockerfile",
+    "otel-bootstrap.js",
+    "otel-bootstrap.ts",
+    "package-lock.json",
+    "package.json",
     "tsconfig.json",
-    "next.config.js"
+    "README.md",
+    "next.config.js",
+    "LICENSE.txt"
   ],
   "dependencies": {
+    "@azure/monitor-opentelemetry-exporter": "^1.0.0-beta.32",
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/api-logs": "^0.203.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.62.1",
+    "@opentelemetry/exporter-logs-otlp-http": "^0.203.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.203.0",
+    "@opentelemetry/instrumentation-fastify": "^0.48.0",
+    "@opentelemetry/instrumentation-http": "^0.203.0",
+    "@opentelemetry/sdk-logs": "^0.203.0",
+    "@opentelemetry/sdk-node": "^0.203.0",
     "next": "^15.4.6",
+    "pino": "^9.9.0",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "react-feature-flags": "^1.0.0"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
