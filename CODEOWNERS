@@ -1,0 +1,6 @@
+
+# This file defines code owners for the repository.
+# The listed users or teams will be requested for review when changes are made.
+
+# Set the repository owner as the default code owner for all files
+* @masterzdran

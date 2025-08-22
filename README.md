@@ -69,9 +69,6 @@ Or use the VS Code Dev Container for isolated development.
   npm test
   ```
 
-## 📂 Project Structure
-
-```
 src/
   features/
     <feature>/
@@ -87,10 +84,86 @@ Dockerfile
 .devcontainer/
 ```
 
-## 🔐 Security
+## 📂 Project Structure & Feature Isolation
 
-- The `/api/config` endpoint requires the `x-config-token` header with the value of `NEXT_PUBLIC_CONFIG_ACCESS_TOKEN`.
-- Only allowed origins can access the API (see `src/features/config/api/config.route.ts`).
+```
+src/
+  features/
+    <feature>/
+      api/         # API route handlers (server-side logic)
+      components/  # React components for the feature
+      lib/         # Feature-specific utilities (e.g., fetchConfig)
+      types/       # TypeScript types (if needed)
+      index.ts     # Feature entry point (re-exports)
+  pages/
+    index.tsx     # Main dashboard, uses <ConfigViewer />
+    api/
+      config.ts   # Exposes config API, secured by origin and token
+  ...
+.env, .env.example
+Dockerfile
+.devcontainer/
+```
+
+### Adding New Features
+To add a new feature, create a folder under `src/features/<feature>` and follow the same structure. Export your main components and utilities from `index.ts` for easy imports.
+
+
+## 🔐 API Security
+
+- The `/api/config` endpoint requires:
+  - The `x-config-token` header with the value of `NEXT_PUBLIC_CONFIG_ACCESS_TOKEN`.
+  - The request origin to match an allowed list (see `src/features/config/api/config.route.ts`).
+- If either check fails, the API returns a 401 or 403 error.
+
+
+## 🏷️ Feature Flags
+
+- The solution supports feature flags via the `FEATURE_FLAGS` environment variable (comma-separated list).
+- The `/api/config` endpoint returns these as an array, enabling conditional rendering or logic in the frontend.
+
+## 🧩 Config Feature UI
+
+- The `ConfigViewer` React component (see `src/features/config/components/ConfigViewer.tsx`) fetches and displays configuration from `/api/config`.
+- It shows loading and error states, and is used on the main dashboard page (`src/pages/index.tsx`).
+
+## 📝 Logging
+
+- The logging feature (`src/features/logging/index.js`) provides `logInfo`, `logWarn`, and `logError` functions for structured, semantic logs.
+- These use OpenTelemetry’s logger provider and can be used anywhere in your app:
+  ```js
+  import { logInfo, logWarn, logError } from '@/features/logging';
+  logInfo('User login', { userId: 'abc123' });
+  ```
+
+## 📈 OpenTelemetry Setup
+
+- The OpenTelemetry feature (`src/features/opentelemetry/otel.ts`) supports both Azure Monitor and generic OTLP endpoints.
+- It is initialized before the app starts via `otel-bootstrap.ts`, which is preloaded by the `dev` and `start` scripts.
+- No manual code changes are needed to enable tracing or logging—just set the relevant environment variables.
+
+## ⚙️ Environment Variables
+
+The following environment variables are used:
+
+- `API_BASE_URL`
+- `MS_CLIENT_ID`
+- `FEATURE_FLAGS`
+- `CONFIG_ACCESS_TOKEN`
+- `NEXT_PUBLIC_CONFIG_ACCESS_TOKEN`
+- `OTEL_EXPORTER_OTLP_ENDPOINT`
+- `AZURE_MONITOR_CONNECTION_STRING`
+- `OTEL_SERVICE_NAME`
+
+## 🛠️ Tech Stack
+
+- Next.js 15
+- React 19
+- TypeScript 5.9
+- OpenTelemetry (tracing & logging)
+- Pino (logging)
+- Docker support
+- Feature-based modular architecture
 
 ## 📚 Documentation
 
